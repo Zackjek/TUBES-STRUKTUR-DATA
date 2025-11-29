@@ -8,7 +8,7 @@
 
 ---
 
-## 👥 Anggota Kelompok (Tim 3)
+## 👥 Anggota Kelompok 2
 
 | No | Nama Mahasiswa | Peran (Role) | GitHub |
 | :---: | :--- | :--- | :---: |
@@ -16,7 +16,6 @@
 | 2. | **Ichya Ulumiddin** | *Data Structure Implementation* | - |
 | 3. | **Aril Ahnaf Kusuma** | *Frontend CLI & Flow* | - |
 
-*(Silakan edit peran sesuai pembagian tugas asli kalian)*
 
 ---
 
