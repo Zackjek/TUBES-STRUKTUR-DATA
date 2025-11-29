@@ -60,7 +60,7 @@ Pastikan compiler C++ (MinGW/G++) sudah terinstall.
     ```
 4.  **Jalankan**
     ```bash
-    ./main
+    ./main.exe
     ```
 
 ---
