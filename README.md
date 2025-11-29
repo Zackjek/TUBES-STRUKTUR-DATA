@@ -33,12 +33,14 @@ Aplikasi ini dirancang untuk mempertemukan penjual dan pembeli dalam sistem lela
 
 ## 🛠️ Struktur Data yang Digunakan
 
-Proyek ini mengimplementasikan konsep Struktur Data berikut untuk efisiensi memori dan kecepatan:
+Proyek ini mengimplementasikan konsep Struktur Data berikut:
 
-* **Single Linked List:** Untuk menyimpan daftar barang yang sedang dilelang.
-* **Queue (Antrean):** Untuk mengatur urutan penawaran (bid) yang masuk.
-* **Stack (Tumpukan):** Untuk fitur *undo* atau riwayat navigasi menu.
-* **Searching & Sorting:** Algoritma untuk mencari barang dan mengurutkan harga tertinggi.
+* **Single Linked List:** Digunakan untuk menyimpan daftar barang lelang secara dinamis. Setiap node (`ElmList`) berisi data barang dan pointer ke barang berikutnya.
+  
+* **Stack (Tumpukan):** Digunakan dalam fitur **Riwayat Penawaran (Bid History)**. Setiap barang memiliki Stack tersendiri untuk menyimpan harga tawaran dari user. 
+  * *Konsep LIFO (Last In First Out):* Tawaran terbaru akan selalu berada di posisi teratas (`Top`) untuk mempermudah pengecekan harga tertinggi saat ini.
+
+* **Searching (Pencarian):** Digunakan untuk mencari ID barang tertentu saat user ingin melakukan penawaran atau saat admin ingin menyetujui barang (`searchByID`).
 
 ---
 
