@@ -21,56 +21,18 @@
 
 ## 📚 Deskripsi Proyek
 
-Aplikasi ini dirancang untuk mempertemukan penjual dan pembeli dalam sistem lelang terbuka. Pengguna dapat mendaftarkan barang, melakukan penawaran (bid), dan menentukan pemenang lelang berdasarkan harga tertinggi.
-
-**Fitur Utama:**
-* ✅ **Manajemen User:** Pendaftaran pelelang dan penawar.
-* ✅ **Listing Barang:** Menambahkan barang yang akan dilelang.
-* ✅ **Sistem Bidding:** Mekanisme tawar-menawar harga.
-* ✅ **Riwayat Transaksi:** Mencatat sejarah pemenang lelang.
+Blom mulai mwheheh
 
 ---
 
 ## 🛠️ Struktur Data yang Digunakan
 
-Proyek ini mengimplementasikan konsep Struktur Data berikut:
-
-* **Single Linked List:** Digunakan untuk menyimpan daftar barang lelang secara dinamis. Setiap node (`ElmList`) berisi data barang dan pointer ke barang berikutnya.
-  
-* **Stack (Tumpukan):** Digunakan dalam fitur **Riwayat Penawaran (Bid History)**. Setiap barang memiliki Stack tersendiri untuk menyimpan harga tawaran dari user. 
-  * *Konsep LIFO (Last In First Out):* Tawaran terbaru akan selalu berada di posisi teratas (`Top`) untuk mempermudah pengecekan harga tertinggi saat ini.
-
-* **Searching (Pencarian):** Digunakan untuk mencari ID barang tertentu saat user ingin melakukan penawaran atau saat admin ingin menyetujui barang (`searchByID`).
-
+[-]
 ---
 
 ## 💻 Cara Menjalankan Program
 
-Pastikan compiler C++ (MinGW/G++) sudah terinstall.
-
-1.  **Clone Repository**
-    ```bash
-    git clone [https://github.com/Zackjek/Tubes-Strukdat.git](https://github.com/Zackjek/Tubes-Strukdat.git)
-    ```
-2.  **Masuk ke Direktori**
-    ```bash
-    cd Tubes-Strukdat
-    ```
-3.  **Compile Program**
-    ```bash
-    g++ main.cpp tubes.cpp -o main
-    ```
-4.  **Jalankan**
-    ```bash
-    ./main.exe
-    ```
-
----
-
-## 📸 Dokumentasi / Screenshot
-
-*(Coming Soon - Akan ditambahkan setelah program selesai)*
-
+[-]
 ---
 
 <p align="center">
