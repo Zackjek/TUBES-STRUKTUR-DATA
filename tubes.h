@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream> // Tambahan untuk Save File
 
 using namespace std;
 
@@ -79,12 +80,13 @@ void push(Stack &S, string nama, double harga);
 void printStack(Stack S);
 double getMaxBid(Stack S);
 
-// Primitif List & MLL (Anggota 2)
+// Primitif List & MLL (Anggota 2 - TUGAS KAMU)
 void createList(List &L);
 void insertLast(List &L, string nama, double harga, string penjual, int &autoID);
-void addSpec(addressList P, string key, string value); // Tambah anak
+void addSpec(addressList P, string key, string value); // Tambah spek ke barang P
 addressList searchByID(List L, int id);
-void printList(List L, string role, string username);
+void printList(List L); // Saya update biar simpel dulu tanpa parameter role
+void saveToFile(List L); // Fitur tambahan kamu
 
 // Primitif Tree (Anggota 1)
 addressTree insertTree(addressTree root, addressList itemPtr);

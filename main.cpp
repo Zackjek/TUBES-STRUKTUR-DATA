@@ -1,37 +1,49 @@
 #include "tubes.h"
 
 int main() {
-    // Setup Struktur Data
+    // 1. Setup Struktur Data
     List daftarBarang;
     createList(daftarBarang);
-    int globalIDCounter = 0;
+    
+    // Counter ID agar setiap barang punya ID unik (1, 2, 3...)
+    int globalIDCounter = 1; 
     
     int pil;
     string username, pass;
 
-    // Loop Utama Aplikasi
+    // 2. Loop Utama Aplikasi
     while (true) {
+        // Bersihkan layar terminal biar rapi (Opsional, kalau error hapus aja)
+        // system("cls"); 
+
         cout << "\n=== SISTEM LELANG ONLINE (DEV) ===\n";
         cout << "1. Login Admin\n";
-        cout << "2. Login Penjual\n";
+        cout << "2. Login Penjual (TUGAS KAMU)\n";
         cout << "3. Login Pembeli\n";
-        cout << "4. Cari Barang (BST)\n";
+        cout << "4. Cari Barang\n";
         cout << "0. Keluar\n";
         cout << "Pilih: "; cin >> pil;
 
-        if (pil == 0) break;
+        if (pil == 0) {
+            cout << "Program Selesai. Terima kasih!\n";
+            break;
+        }
 
         if (pil == 1) {
             cout << "Password (ketik 'admin'): "; cin >> pass;
-            if (pass == "admin") menuAdmin(daftarBarang);
-            else cout << "Password Salah!\n";
+            if (pass == "admin") {
+                menuAdmin(daftarBarang);
+            } else {
+                cout << "Password Salah!\n";
+            }
         } 
         else if (pil == 2) {
-            cout << "Username Penjual: "; cin >> username;
+            cout << "Masukkan Username Penjual: "; cin >> username;
+            // Masuk ke menu buatanmu di tubes.cpp
             menuPenjual(daftarBarang, username, globalIDCounter);
         } 
         else if (pil == 3) {
-            cout << "Username Pembeli: "; cin >> username;
+            cout << "Masukkan Username Pembeli: "; cin >> username;
             menuPembeli(daftarBarang, username);
         }
         else if (pil == 4) {
@@ -42,6 +54,5 @@ int main() {
         }
     }
 
-    cout << "Program Selesai.\n";
     return 0;
 }
