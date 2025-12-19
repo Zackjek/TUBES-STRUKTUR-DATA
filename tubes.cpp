@@ -141,6 +141,16 @@ void printList(List L, string role, string username) {
 // ==========================================
 // IMPLEMENTASI TREE (SEARCHING)
 // ==========================================
+
+// fungsi ini buat bikin huruf jadi kecil semua
+string toLowerCase(string str) {
+    string hasil = str;
+    for (int i = 0; i < hasil.length(); i++) {
+        hasil[i] = tolower(hasil[i]);
+    }
+    return hasil;
+}
+
 addressTree insertTree(addressTree root, addressList itemPtr) {
     if (root == NULL) {
         addressTree P = new TreeNode;
@@ -162,14 +172,20 @@ addressTree insertTree(addressTree root, addressList itemPtr) {
 addressList searchTree(addressTree root, string namaDicari) {
     if (root == NULL) return NULL;
     
-    // Partial Match Logic
-    if (root->namaBarang.find(namaDicari) != string::npos) {
+    // 1. Ubah nama di node & yang dicari jadi lowercase (huruf kecil)
+    string namaDiNode = toLowerCase(root->namaBarang);
+    string keyword = toLowerCase(namaDicari);
+
+    // 2. Cek apakah keyword ada di dalam namaBarang
+    if (namaDiNode.find(keyword) != string::npos) {
         return root->originalItem;
     }
     
+    // 3. Lanjut cari ke kiri
     addressList hasilKiri = searchTree(root->left, namaDicari);
     if (hasilKiri != NULL) return hasilKiri;
     
+    // 4. Lanjut cari ke kanan
     return searchTree(root->right, namaDicari);
 }
 

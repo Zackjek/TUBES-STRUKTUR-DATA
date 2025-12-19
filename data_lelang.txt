@@ -1,0 +1,4 @@
+BARANG|1|Pitik|1000|ayam|AKTIF
+SPEK|1|Jenis|Pitik
+BARANG|2|Laptop Gaming|1000000|aku|AKTIF
+SPEK|2|Warna|Merah
