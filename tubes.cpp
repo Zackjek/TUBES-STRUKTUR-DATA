@@ -10,19 +10,38 @@ void cetakSpasi(int total, int terpakai) {
 // ==========================================
 // IMPLEMENTASI STACK (RIWAYAT BID)
 // ==========================================
-void createStack(Stack &S) { S.top = NULL; }
+void createStack(Stack &S) { 
+    S.top = NULL; 
+}
+
+double getMaxBid(Stack S) {
+    if (S.top == NULL) return 0; // Kalau kosong, bid tertinggi 0
+    return S.top->info.nominal;
+}
 
 void push(Stack &S, string nama, double harga) {
+    // Validasi: Bid baru harus lebih tinggi dari bid sekarang
+    double currentMax = getMaxBid(S);
+    
+    if (harga <= currentMax) {
+        cout << ">> GAGAL: Tawaran harus lebih tinggi dari Rp " << (long)currentMax << "!\n";
+        return;
+    }
+
+    // Kalau valid, masukkan ke Stack (Insert First)
     addressStack P = new ElmStack;
     P->info.namaPenawar = nama;
     P->info.nominal = harga;
     P->next = S.top;
     S.top = P;
+
+    cout << ">> SUKSES: Tawaran Rp " << (long)harga << " diterima!\n";
 }
 
 void printStack(Stack S) {
-    if (S.top == NULL) cout << "       (Belum ada penawaran)\n";
-    else {
+    if (S.top == NULL) {
+        cout << "       (Belum ada penawaran)\n";
+    } else {
         addressStack P = S.top;
         while (P != NULL) {
             cout << "       -> Rp " << (long)P->info.nominal 
@@ -30,11 +49,6 @@ void printStack(Stack S) {
             P = P->next;
         }
     }
-}
-
-double getMaxBid(Stack S) {
-    if (S.top == NULL) return 0;
-    return S.top->info.nominal;
 }
 
 // ==========================================
@@ -129,27 +143,47 @@ void printList(List L, string role, string username) {
 // IMPLEMENTASI TREE (SEARCHING)
 // ==========================================
 addressTree insertTree(addressTree root, addressList itemPtr) {
+    // Basis: Jika pohon kosong, buat node baru
     if (root == NULL) {
         addressTree P = new TreeNode;
         P->namaBarang = itemPtr->info.namaBarang;
-        P->originalItem = itemPtr;
-        P->left = NULL; P->right = NULL;
+        P->originalItem = itemPtr; // Simpan pointer ke data asli (MLL)
+        P->left = NULL; 
+        P->right = NULL;
         return P;
     }
+
+    // Rekurens: Jika nama lebih kecil ke kiri, lebih besar ke kanan
     if (itemPtr->info.namaBarang < root->namaBarang) {
         root->left = insertTree(root->left, itemPtr);
-    } else {
+    } else if (itemPtr->info.namaBarang > root->namaBarang) {
+        // Kalau nama sama, tidak dimasukkan (asumsi nama unik atau abaikan)
         root->right = insertTree(root->right, itemPtr);
     }
     return root;
 }
 
 addressList searchTree(addressTree root, string namaDicari) {
-    if (root == NULL) return NULL;
-    if (root->namaBarang == namaDicari) return root->originalItem;
+    // 1. Basis: Kalau pohon kosong atau ranting habis
+    if (root == NULL) {
+        return NULL;
+    }
     
-    if (namaDicari < root->namaBarang) return searchTree(root->left, namaDicari);
-    else return searchTree(root->right, namaDicari);
+    // 2. Cek Node Saat Ini (Logika Partial Match)
+    // fungsi .find() akan mengembalikan posisi kata. 
+    // Jika tidak ketemu, dia mengembalikan string::npos.
+    if (root->namaBarang.find(namaDicari) != string::npos) {
+        return root->originalItem; // KETEMU! Kembalikan pointer barang aslinya
+    }
+    
+    // 3. Kalau belum ketemu di sini, cari di KIRI
+    addressList hasilKiri = searchTree(root->left, namaDicari);
+    if (hasilKiri != NULL) {
+        return hasilKiri; // Kalau ketemu di kiri, langsung balikin
+    }
+    
+    // 4. Kalau di kiri gak ada, cari di KANAN
+    return searchTree(root->right, namaDicari);
 }
 
 // ==========================================
@@ -186,10 +220,16 @@ void menuPenjual(List &L, string username, int &counterID) {
         cout << "\n[MENU PENJUAL: " << username << "]\n1. Tambah Barang\n2. Lihat Barang Saya\n0. Kembali\nPilih: ";
         cin >> pil;
         if (pil == 1) {
-            string nama; double harga;
-            cout << "Nama Barang: "; cin.ignore(); getline(cin, nama);
-            cout << "Harga Awal : "; cin >> harga;
-            insertLast(L, nama, harga, username, counterID);
+    string nama; double harga;
+    
+    cout << "Nama Barang: ";
+    cin.ignore();          // <--- WAJIB: Buang sisa enter dari menu sebelumnya
+    getline(cin, nama);    // <--- SOLUSI: Baca kalimat lengkap (termasuk spasi)
+    
+    cout << "Harga Awal : "; 
+    cin >> harga;          // Kalau angka, tetap pakai cin biasa
+    
+    insertLast(L, nama, harga, username, counterID);
             
             // Input Spesifikasi (Looping)
             addressList P = searchByID(L, counterID);
@@ -239,26 +279,60 @@ void menuPembeli(List &L, string username) {
 }
 
 void menuCariBarang(List L) {
-    if (L.first == NULL) { cout << ">> Data Kosong.\n"; return; }
+    if (L.first == NULL) {
+        cout << ">> Belum ada barang untuk dicari.\n";
+        return;
+    }
 
-    // Build Tree (BST) dari List Barang Aktif
+    // 1. Build Tree (BST) otomatis setiap masuk menu ini
+    // Agar data selalu update dengan List terbaru
     addressTree root = NULL;
     addressList P = L.first;
     while (P != NULL) {
-        if (P->info.status == "AKTIF") root = insertTree(root, P);
+        // Hanya masukkan barang yang statusnya AKTIF ke pencarian
+        if (P->info.status == "AKTIF") {
+            root = insertTree(root, P);
+        }
         P = P->next;
     }
 
-    string cari;
-    cout << "\n[PENCARIAN BARANG - BINARY SEARCH TREE]\nMasukkan Nama Barang Persis: ";
-    cin.ignore(); getline(cin, cari);
+    if (root == NULL) {
+        cout << ">> Tidak ada barang AKTIF yang bisa dicari.\n";
+        return;
+    }
 
+    // 2. Interaksi User
+   string cari;
+    cout << "Masukkan Nama Barang: ";
+    cin.ignore();          // <--- WAJIB ADA
+    getline(cin, cari);    // <--- Baca spasi (misal: "Laptop Gaming")
+    
     addressList hasil = searchTree(root, cari);
+
+    // 3. Panggil fungsi sakti SearchTree buatanmu
+    addressList hasil = searchTree(root, cari);
+
     if (hasil != NULL) {
-        cout << "\n>> BARANG DITEMUKAN!\nID: " << hasil->info.id 
-             << " | Nama: " << hasil->info.namaBarang 
-             << " | Harga: " << (long)hasil->info.hargaAwal << endl;
+        cout << "\n>> BARANG DITEMUKAN!\n";
+        cout << "==========================\n";
+        cout << "ID      : " << hasil->info.id << endl;
+        cout << "Nama    : " << hasil->info.namaBarang << endl;
+        cout << "Penjual : " << hasil->info.penjual << endl;
+        cout << "Harga   : Rp " << (long)hasil->info.hargaAwal << endl;
+        cout << "Bid Tertinggi Saat Ini: Rp " << (long)getMaxBid(hasil->info.historyBid) << endl;
+        cout << "==========================\n";
+        
+        // Opsional: Langsung tawarkan bid
+        cout << "Ingin menawar barang ini? (y/n): ";
+        char jawab; cin >> jawab;
+        if (jawab == 'y' || jawab == 'Y') {
+            string penawar; double nominal;
+            cout << "Nama Anda: "; cin >> penawar; // Harusnya dari session login
+            cout << "Nominal  : "; cin >> nominal;
+            push(hasil->info.historyBid, penawar, nominal);
+        }
+
     } else {
-        cout << ">> Barang tidak ditemukan.\n";
+        cout << ">> Barang '" << cari << "' tidak ditemukan.\n";
     }
 }
