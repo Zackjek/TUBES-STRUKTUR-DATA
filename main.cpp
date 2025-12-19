@@ -1,49 +1,40 @@
 #include "tubes.h"
 
 int main() {
-    // 1. Setup Struktur Data
+    // Setup Struktur Data
     List daftarBarang;
     createList(daftarBarang);
+    int globalIDCounter = 0;
     
-    // Counter ID agar setiap barang punya ID unik (1, 2, 3...)
-    int globalIDCounter = 1; 
+    // [TAMBAHAN ANGGOTA 2] Load data otomatis saat program mulai
+    loadFromFile(daftarBarang, globalIDCounter);
     
     int pil;
     string username, pass;
 
-    // 2. Loop Utama Aplikasi
+    // Loop Utama Aplikasi
     while (true) {
-        // Bersihkan layar terminal biar rapi (Opsional, kalau error hapus aja)
-        // system("cls"); 
-
-        cout << "\n=== SISTEM LELANG ONLINE (DEV) ===\n";
+        cout << "\n=== SISTEM LELANG ONLINE (FINAL) ===\n";
         cout << "1. Login Admin\n";
-        cout << "2. Login Penjual (TUGAS KAMU)\n";
+        cout << "2. Login Penjual\n";
         cout << "3. Login Pembeli\n";
-        cout << "4. Cari Barang\n";
+        cout << "4. Cari Barang (BST)\n";
         cout << "0. Keluar\n";
         cout << "Pilih: "; cin >> pil;
 
-        if (pil == 0) {
-            cout << "Program Selesai. Terima kasih!\n";
-            break;
-        }
+        if (pil == 0) break;
 
         if (pil == 1) {
             cout << "Password (ketik 'admin'): "; cin >> pass;
-            if (pass == "admin") {
-                menuAdmin(daftarBarang);
-            } else {
-                cout << "Password Salah!\n";
-            }
+            if (pass == "admin") menuAdmin(daftarBarang);
+            else cout << "Password Salah!\n";
         } 
         else if (pil == 2) {
-            cout << "Masukkan Username Penjual: "; cin >> username;
-            // Masuk ke menu buatanmu di tubes.cpp
+            cout << "Username Penjual: "; cin >> username;
             menuPenjual(daftarBarang, username, globalIDCounter);
         } 
         else if (pil == 3) {
-            cout << "Masukkan Username Pembeli: "; cin >> username;
+            cout << "Username Pembeli: "; cin >> username;
             menuPembeli(daftarBarang, username);
         }
         else if (pil == 4) {
@@ -54,5 +45,6 @@ int main() {
         }
     }
 
+    cout << "Program Selesai. Data aman tersimpan.\n";
     return 0;
 }

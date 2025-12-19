@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <fstream> // Tambahan untuk Save File
 
 using namespace std;
 
@@ -27,7 +26,6 @@ struct Stack {
 };
 
 // --- ADT CHILD MLL (Spesifikasi Barang) ---
-// Anggota 2: Ini struktur Child untuk MLL
 struct SpecInfo {
     string key;   // Contoh: "Warna"
     string value; // Contoh: "Merah"
@@ -40,14 +38,13 @@ struct ElmSpec {
 };
 
 // --- ADT LIST PARENT (Daftar Barang) ---
-// Anggota 2: Ini struktur Parent
 struct ItemInfo {
     int id;
     string namaBarang;
     string penjual;
     double hargaAwal;
-    string status;      // "PENDING", "AKTIF"
-    Stack historyBid;   // Stack bid per barang
+    string status;       // "PENDING", "AKTIF"
+    Stack historyBid;    // Stack bid per barang
     addressSpec firstSpec; // Pointer ke Child (Spesifikasi)
 };
 
@@ -61,7 +58,6 @@ struct List {
 };
 
 // --- ADT TREE (Untuk Pencarian BST) ---
-// Anggota 1: Struktur Tree untuk sorting/searching
 typedef struct TreeNode *addressTree;
 struct TreeNode {
     string namaBarang;      // Key untuk sorting
@@ -80,13 +76,12 @@ void push(Stack &S, string nama, double harga);
 void printStack(Stack S);
 double getMaxBid(Stack S);
 
-// Primitif List & MLL (Anggota 2 - TUGAS KAMU)
+// Primitif List & MLL (Anggota 2)
 void createList(List &L);
 void insertLast(List &L, string nama, double harga, string penjual, int &autoID);
-void addSpec(addressList P, string key, string value); // Tambah spek ke barang P
+void addSpec(addressList P, string key, string value);
 addressList searchByID(List L, int id);
-void printList(List L); // Saya update biar simpel dulu tanpa parameter role
-void saveToFile(List L); // Fitur tambahan kamu
+void printList(List L, string role, string username);
 
 // Primitif Tree (Anggota 1)
 addressTree insertTree(addressTree root, addressList itemPtr);
@@ -97,5 +92,10 @@ void menuAdmin(List &L);
 void menuPenjual(List &L, string username, int &counterID);
 void menuPembeli(List &L, string username);
 void menuCariBarang(List L);
+
+// [TAMBAHAN ANGGOTA 2: FILE HANDLING]
+// Ini tugas utamamu agar data tersimpan permanen
+void saveToFile(List L);
+void loadFromFile(List &L, int &lastID);
 
 #endif
