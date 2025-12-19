@@ -82,6 +82,7 @@ void insertLast(List &L, string nama, double harga, string penjual, int &autoID)
 void addSpec(addressList P, string key, string value);
 addressList searchByID(List L, int id);
 void printList(List L, string role, string username);
+void hapusBarangMLL(List &L, int idHapus);
 
 // Primitif Tree (Anggota 1)
 addressTree insertTree(addressTree root, addressList itemPtr);

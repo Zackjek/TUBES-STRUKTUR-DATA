@@ -38,41 +38,6 @@ void push(Stack &S, string nama, double harga) {
     cout << ">> SUKSES: Tawaran Rp " << (long)harga << " diterima!\n";
 }
 
-// Fungsi untuk menghapus barang dari Linked List berdasarkan ID
-void hapusBarangMLL(List &L, int idHapus) {
-    addressList P = L.first;
-    addressList prev = NULL;
-    bool ketemu = false;
-
-    // 1. Cari barangnya
-    while (P != NULL) {
-        if (P->info.id == idHapus) {
-            ketemu = true;
-            break;
-        }
-        prev = P;
-        P = P->next;
-    }
-
-    if (!ketemu) {
-        cout << ">> Gagal: ID Barang " << idHapus << " tidak ditemukan.\n";
-        return;
-    }
-
-    // 2. Hapus Node dari List
-    if (prev == NULL) {
-        // Hapus elemen pertama (Head)
-        L.first = P->next;
-    } else {
-        // Hapus elemen di tengah/akhir
-        prev->next = P->next;
-    }
-
-    // 3. Bersihkan memori (Delete pointer)
-    delete P; 
-    
-    cout << ">> Sukses: Barang ID " << idHapus << " berhasil dihapus dari sistem.\n";
-}
 
 void printStack(Stack S) {
     if (S.top == NULL) {
@@ -174,6 +139,42 @@ void printList(List L, string role, string username) {
     if (!found) cout << "   (Tidak ada data yang sesuai)\n";
 }
 
+// Fungsi untuk menghapus barang dari Linked List berdasarkan ID
+void hapusBarangMLL(List &L, int idHapus) {
+    addressList P = L.first;
+    addressList prev = NULL;
+    bool ketemu = false;
+
+    // 1. Cari barangnya
+    while (P != NULL) {
+        if (P->info.id == idHapus) {
+            ketemu = true;
+            break;
+        }
+        prev = P;
+        P = P->next;
+    }
+
+    if (!ketemu) {
+        cout << ">> Gagal: ID Barang " << idHapus << " tidak ditemukan.\n";
+        return;
+    }
+
+    // 2. Hapus Node dari List
+    if (prev == NULL) {
+        // Hapus elemen pertama (Head)
+        L.first = P->next;
+    } else {
+        // Hapus elemen di tengah/akhir
+        prev->next = P->next;
+    }
+
+    // 3. Bersihkan memori (Delete pointer)
+    delete P; 
+    
+    cout << ">> Sukses: Barang ID " << idHapus << " berhasil dihapus dari sistem.\n";
+}
+
 // ==========================================
 // IMPLEMENTASI TREE (SEARCHING)
 // ==========================================
@@ -228,6 +229,7 @@ addressList searchTree(addressTree root, string namaDicari) {
 // ==========================================
 // MENU UTAMA LOGIC
 // ==========================================
+
 void menuAdmin(List &L) {
     int pil;
     do {
