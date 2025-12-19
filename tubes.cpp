@@ -38,6 +38,42 @@ void push(Stack &S, string nama, double harga) {
     cout << ">> SUKSES: Tawaran Rp " << (long)harga << " diterima!\n";
 }
 
+// Fungsi untuk menghapus barang dari Linked List berdasarkan ID
+void hapusBarangMLL(List &L, int idHapus) {
+    addressList P = L.first;
+    addressList prev = NULL;
+    bool ketemu = false;
+
+    // 1. Cari barangnya
+    while (P != NULL) {
+        if (P->info.id == idHapus) {
+            ketemu = true;
+            break;
+        }
+        prev = P;
+        P = P->next;
+    }
+
+    if (!ketemu) {
+        cout << ">> Gagal: ID Barang " << idHapus << " tidak ditemukan.\n";
+        return;
+    }
+
+    // 2. Hapus Node dari List
+    if (prev == NULL) {
+        // Hapus elemen pertama (Head)
+        L.first = P->next;
+    } else {
+        // Hapus elemen di tengah/akhir
+        prev->next = P->next;
+    }
+
+    // 3. Bersihkan memori (Delete pointer)
+    delete P; 
+    
+    cout << ">> Sukses: Barang ID " << idHapus << " berhasil dihapus dari sistem.\n";
+}
+
 void printStack(Stack S) {
     if (S.top == NULL) {
         cout << "        (Belum ada penawaran)\n";
@@ -195,27 +231,51 @@ addressList searchTree(addressTree root, string namaDicari) {
 void menuAdmin(List &L) {
     int pil;
     do {
-        cout << "\n[MENU ADMIN]\n1. Lihat & Setujui Barang\n2. Lihat History Bid\n3. Simpan Data (File)\n0. Kembali\nPilih: "; 
+        // Tambahkan opsi 4. Hapus Barang
+        cout << "\n[MENU ADMIN]\n1. Lihat & Setujui Barang\n2. Lihat History Bid\n3. Simpan Data (File)\n4. Hapus Barang \n0. Kembali\nPilih: "; 
         cin >> pil;
+
         if (pil == 1) {
+            // ... (kode lama: setujui barang) ...
             printList(L, "admin", "");
             cout << "Masukkan ID Barang utk disetujui (0 batal): ";
             int id; cin >> id;
-            if (id!=0) {
+            if (id != 0) {
                 addressList item = searchByID(L, id);
                 if(item) { item->info.status = "AKTIF"; cout << "Sukses!\n"; }
             }
+
         } else if (pil == 2) {
-            printList(L, "admin", "");
-            cout << "ID Barang: "; int id; cin >> id;
-            addressList item = searchByID(L, id);
-            if(item) { 
-                cout << "History Bid " << item->info.namaBarang << ":\n";
-                printStack(item->info.historyBid);
-            }
+            // ... (kode lama: lihat history) ...
+             printList(L, "admin", "");
+             cout << "ID Barang: "; int id; cin >> id;
+             addressList item = searchByID(L, id);
+             if(item) { 
+                 cout << "History Bid " << item->info.namaBarang << ":\n";
+                 printStack(item->info.historyBid);
+             }
+
         } else if (pil == 3) {
+            // ... (kode lama: save) ...
             saveToFile(L);
+
+        } else if (pil == 4) { // <--- INI FITUR BARUNYA
+            cout << "=== HAPUS BARANG ===\n";
+            printList(L, "admin", ""); // Tampilkan semua barang dulu
+            
+            cout << "Masukkan ID Barang yang akan DIHAPUS PERMANEN (0 batal): ";
+            int idHapus;
+            cin >> idHapus;
+
+            if (idHapus != 0) {
+                // Panggil fungsi hapus
+                hapusBarangMLL(L, idHapus);
+                
+                // PENTING: Langsung save ke file biar sinkron
+                saveToFile(L); 
+            }
         }
+
     } while (pil != 0);
 }
 
