@@ -1,4 +1,5 @@
 #include "tubes.h"
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 
@@ -100,43 +101,59 @@ addressList searchByID(List L, int id) {
     return NULL;
 }
 
+// [UPDATE ANGGOTA 3] Tampilan Tabel Rapi menggunakan iomanip
 void printList(List L, string role, string username) {
     addressList P = L.first;
     bool found = false;
+    
+    // Header Tabel
     cout << "\nDAFTAR BARANG (MLL):\n";
-    cout << "=================================================================\n";
+    cout << "=========================================================================================\n";
+    cout << left << setw(5) << "ID" 
+         << setw(25) << "Nama Barang" 
+         << setw(15) << "Penjual" 
+         << setw(15) << "Harga Awal" 
+         << setw(15) << "Highest Bid" 
+         << setw(10) << "Status" << endl;
+    cout << "-----------------------------------------------------------------------------------------\n";
     
     while (P != NULL) {
+        // Filter Logic (Sama seperti sebelumnya)
         bool show = false;
         if (role == "admin") show = true;
         else if (role == "penjual" && P->info.penjual == username) show = true;
         else if (role == "pembeli" && P->info.status == "AKTIF") show = true;
 
         if (show) {
-            double currentPrice = P->info.hargaAwal;
+            // Hitung Max Bid untuk tampilan
             double topBid = getMaxBid(P->info.historyBid);
-            if (topBid > currentPrice) currentPrice = topBid;
-
-            cout << "ID: " << P->info.id << " | " << P->info.namaBarang;
-            cout << " | Penjual: " << P->info.penjual << endl;
-            cout << "   Harga: Rp " << (long)currentPrice << " (Awal: " << (long)P->info.hargaAwal << ")\n";
-            cout << "   Status: " << P->info.status << endl;
             
-            cout << "   [Spesifikasi]: ";
+            // Cetak Baris Tabel
+            cout << left << setw(5) << P->info.id 
+                 << setw(25) << P->info.namaBarang.substr(0, 23) // Potong nama biar tabel gak hancur
+                 << setw(15) << P->info.penjual
+                 << setw(15) << (long)P->info.hargaAwal
+                 << setw(15) << (long)topBid
+                 << setw(10) << P->info.status << endl;
+
+            // Cetak Spesifikasi (Child) di bawahnya agak menjorok
             addressSpec S = P->info.firstSpec;
-            if (S == NULL) cout << "-";
-            while (S != NULL) {
-                cout << S->info.key << ":" << S->info.value;
-                if (S->next != NULL) cout << ", ";
-                S = S->next;
+            if (S != NULL) {
+                cout << "   [Spek]: ";
+                while (S != NULL) {
+                    cout << S->info.key << ": " << S->info.value;
+                    if (S->next != NULL) cout << " | ";
+                    S = S->next;
+                }
+                cout << endl;
             }
-            cout << endl;
-            cout << "-----------------------------------------------------------------\n";
+            cout << "-----------------------------------------------------------------------------------------\n";
             found = true;
         }
         P = P->next;
     }
     if (!found) cout << "   (Tidak ada data yang sesuai)\n";
+    cout << "=========================================================================================\n";
 }
 
 // Fungsi untuk menghapus barang dari Linked List berdasarkan ID
