@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <cctype>
 
 // --- FUNGSI BANTUAN ---
 void cetakSpasi(int total, int terpakai) {
@@ -241,6 +242,109 @@ addressList searchTree(addressTree root, string namaDicari) {
     
     // 4. Lanjut cari ke kanan
     return searchTree(root->right, namaDicari);
+}
+
+
+// ==========================================
+// [FITUR BARU] MANAJEMEN USER & VALIDASI
+// ==========================================
+
+void createUserList(ListUser &L) {
+    L.first = NULL;
+}
+
+// [UPDATE] Fungsi Cek Password (Berlaku untuk SEMUA Role)
+// Syarat: Minimal 8 Karakter & Tidak Boleh Simbol
+bool isPasswordValid(string pass) {
+    if (pass.length() < 8) {
+        cout << ">> Gagal: Password minimal 8 karakter!\n";
+        return false;
+    }
+    
+    for (char c : pass) {
+        // isalnum = Cuma boleh Huruf (A-Z) dan Angka (0-9)
+        if (!isalnum(c)) {
+            cout << ">> Gagal: Password tidak boleh mengandung simbol/spasi!\n";
+            return false;
+        }
+    }
+    return true;
+}
+
+// [UPDATE] Register dengan Validasi Password
+void registerUser(ListUser &L, string username, string password, string role) {
+    // 1. CEK VALIDASI PASSWORD DULU
+    if (!isPasswordValid(password)) {
+        cout << ">> Registrasi DIBATALKAN karena password tidak memenuhi syarat.\n";
+        return; 
+    }
+
+    // 2. Cek apakah username sudah ada
+    addressUser cek = L.first;
+    while (cek != NULL) {
+        if (cek->info.username == username) {
+            cout << ">> Gagal: Username sudah terpakai!\n";
+            return;
+        }
+        cek = cek->next;
+    }
+
+    // 3. Masukkan data
+    addressUser P = new ElmUser;
+    P->info.username = username;
+    P->info.password = password;
+    P->info.role = role;
+    P->next = L.first;
+    L.first = P;
+    
+    cout << ">> Registrasi " << role << " BERHASIL! Silakan Login.\n";
+    saveUsers(L); // Auto save
+}
+
+// ... (Fungsi loginUser, saveUsers, loadUsers BIARKAN TETAP SAMA) ...
+bool loginUser(ListUser L, string username, string password, string role) {
+    addressUser P = L.first;
+    while (P != NULL) {
+        if (P->info.username == username && 
+            P->info.password == password && 
+            P->info.role == role) {
+            return true; // Ketemu & Cocok
+        }
+        P = P->next;
+    }
+    return false;
+}
+
+// FILE HANDLING KHUSUS USER
+void saveUsers(ListUser L) {
+    ofstream file("data_users.txt");
+    addressUser P = L.first;
+    while (P != NULL) {
+        file << P->info.username << "|" << P->info.password << "|" << P->info.role << endl;
+        P = P->next;
+    }
+    file.close();
+}
+
+void loadUsers(ListUser &L) {
+    ifstream file("data_users.txt");
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string u, p, r;
+        getline(ss, u, '|');
+        getline(ss, p, '|');
+        getline(ss, r, '|');
+        
+        // Insert manual tanpa validasi (karena load dari file)
+        addressUser P = new ElmUser;
+        P->info.username = u;
+        P->info.password = p;
+        P->info.role = r;
+        P->next = L.first;
+        L.first = P;
+    }
+    file.close();
 }
 
 // ==========================================

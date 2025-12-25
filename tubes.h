@@ -66,6 +66,22 @@ struct TreeNode {
     addressTree right;
 };
 
+// --- ADT LIST USER (Untuk Akun Login) ---
+struct UserInfo {
+    string username;
+    string password;
+    string role; // "penjual" atau "pembeli"
+};
+
+typedef struct ElmUser *addressUser;
+struct ElmUser {
+    UserInfo info;
+    addressUser next;
+};
+struct ListUser {
+    addressUser first;
+};
+
 // ==========================================
 // 2. PROTOTYPE FUNGSI (Header)
 // ==========================================
@@ -99,4 +115,12 @@ void menuCariBarang(List L);
 void saveToFile(List L);
 void loadFromFile(List &L, int &lastID);
 
+// Prototype Fungsi User di bawah
+void createUserList(ListUser &L);
+void registerUser(ListUser &L, string username, string password, string role);
+bool loginUser(ListUser L, string username, string password, string role);
+// Di dalam tubes.h
+bool isPasswordValid(string pass); // Validasi password 
+void saveUsers(ListUser L);      // Simpan akun ke file
+void loadUsers(ListUser &L);     // Load akun dari file
 #endif
