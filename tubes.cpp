@@ -66,6 +66,7 @@ void insertLast(List &L, string nama, double harga, string penjual, int &autoID)
     P->info.hargaAwal = harga;
     P->info.penjual = penjual;
     P->info.status = "PENDING";
+    P->info.pemenang = "-"; 
     createStack(P->info.historyBid);
     P->info.firstSpec = NULL;
     P->next = NULL;
@@ -109,35 +110,39 @@ void printList(List L, string role, string username) {
     
     // Header Tabel
     cout << "\nDAFTAR BARANG (MLL):\n";
-    cout << "=========================================================================================\n";
+    cout << "==========================================================================================\n";
     cout << left << setw(5) << "ID" 
-         << setw(25) << "Nama Barang" 
+         << setw(20) << "Nama Barang" 
          << setw(15) << "Penjual" 
          << setw(15) << "Harga Awal" 
          << setw(15) << "Highest Bid" 
-         << setw(10) << "Status" << endl;
-    cout << "-----------------------------------------------------------------------------------------\n";
+         << setw(20) << "Status / Pemenang" << endl; // Lebarin dikit
+    cout << "------------------------------------------------------------------------------------------\n";
     
     while (P != NULL) {
-        // Filter Logic (Sama seperti sebelumnya)
         bool show = false;
         if (role == "admin") show = true;
         else if (role == "penjual" && P->info.penjual == username) show = true;
-        else if (role == "pembeli" && P->info.status == "AKTIF") show = true;
+        else if (role == "pembeli" && (P->info.status == "AKTIF" || P->info.status == "TERJUAL")) show = true;
 
         if (show) {
-            // Hitung Max Bid untuk tampilan
             double topBid = getMaxBid(P->info.historyBid);
             
-            // Cetak Baris Tabel
+            // Logic Tampilan Status biar Keren
+            string statusTampil = P->info.status;
+            if (P->info.status == "TERJUAL") {
+                statusTampil = "SOLD: " + P->info.pemenang;
+            } else if (P->info.status == "DITUTUP") {
+                statusTampil = "CLOSED (No Winner)";
+            }
+
             cout << left << setw(5) << P->info.id 
-                 << setw(25) << P->info.namaBarang.substr(0, 23) // Potong nama biar tabel gak hancur
+                 << setw(20) << P->info.namaBarang.substr(0, 18) 
                  << setw(15) << P->info.penjual
                  << setw(15) << (long)P->info.hargaAwal
                  << setw(15) << (long)topBid
-                 << setw(10) << P->info.status << endl;
+                 << setw(20) << statusTampil << endl; // Pake variabel statusTampil
 
-            // Cetak Spesifikasi (Child) di bawahnya agak menjorok
             addressSpec S = P->info.firstSpec;
             if (S != NULL) {
                 cout << "   [Spek]: ";
@@ -148,13 +153,13 @@ void printList(List L, string role, string username) {
                 }
                 cout << endl;
             }
-            cout << "-----------------------------------------------------------------------------------------\n";
+            cout << "------------------------------------------------------------------------------------------\n";
             found = true;
         }
         P = P->next;
     }
     if (!found) cout << "   (Tidak ada data yang sesuai)\n";
-    cout << "=========================================================================================\n";
+    cout << "==========================================================================================\n";
 }
 
 // Fungsi untuk menghapus barang dari Linked List berdasarkan ID
@@ -347,6 +352,40 @@ void loadUsers(ListUser &L) {
     file.close();
 }
 
+void tutupLelang(List &L, int idBarang) {
+    addressList P = searchByID(L, idBarang);
+    if (P == NULL) {
+        cout << ">> Barang tidak ditemukan.\n";
+        return;
+    }
+
+    if (P->info.status != "AKTIF") {
+        cout << ">> Gagal: Hanya barang status AKTIF yang bisa ditutup lelangnya.\n";
+        return;
+    }
+
+    // Cek apakah ada yang nge-bid? (Cek Stack Top)
+    if (P->info.historyBid.top == NULL) {
+        cout << ">> Warning: Belum ada penawaran sama sekali. Yakin mau tutup? (y/n): ";
+        char t; cin >> t;
+        if (t == 'y' || t == 'Y') {
+            P->info.status = "DITUTUP"; 
+            P->info.pemenang = "-";
+            cout << ">> Lelang ditutup tanpa pemenang.\n";
+        }
+    } else {
+        // AMBIL PEMENANG DARI STACK PALING ATAS
+        string juara = P->info.historyBid.top->info.namaPenawar;
+        double hargaAkhir = P->info.historyBid.top->info.nominal;
+
+        P->info.status = "TERJUAL";
+        P->info.pemenang = juara;
+
+        cout << ">> SELAMAT! Barang terjual kepada " << juara 
+             << " dengan harga Rp " << (long)hargaAkhir << endl;
+    }
+}
+
 // ==========================================
 // MENU UTAMA LOGIC
 // ==========================================
@@ -354,12 +393,16 @@ void loadUsers(ListUser &L) {
 void menuAdmin(List &L) {
     int pil;
     do {
-        // Tambahkan opsi 4. Hapus Barang
-        cout << "\n[MENU ADMIN]\n1. Lihat & Setujui Barang\n2. Lihat History Bid\n3. Simpan Data (File)\n4. Hapus Barang \n0. Kembali\nPilih: "; 
+        cout << "\n[MENU ADMIN]\n"
+             << "1. Lihat & Setujui Barang\n"
+             << "2. Lihat History Bid\n"
+             << "3. Simpan Data (File)\n"
+             << "4. Hapus Barang \n"
+             << "5. Tutup Lelang (Pilih Pemenang)\n"
+             << "0. Kembali\nPilih: "; 
         cin >> pil;
 
         if (pil == 1) {
-            // ... (kode lama: setujui barang) ...
             printList(L, "admin", "");
             cout << "Masukkan ID Barang utk disetujui (0 batal): ";
             int id; cin >> id;
@@ -369,7 +412,6 @@ void menuAdmin(List &L) {
             }
 
         } else if (pil == 2) {
-            // ... (kode lama: lihat history) ...
              printList(L, "admin", "");
              cout << "ID Barang: "; int id; cin >> id;
              addressList item = searchByID(L, id);
@@ -379,23 +421,26 @@ void menuAdmin(List &L) {
              }
 
         } else if (pil == 3) {
-            // ... (kode lama: save) ...
             saveToFile(L);
 
-        } else if (pil == 4) { // <--- INI FITUR BARUNYA
+        } else if (pil == 4) { 
             cout << "=== HAPUS BARANG ===\n";
-            printList(L, "admin", ""); // Tampilkan semua barang dulu
-            
+            printList(L, "admin", ""); 
             cout << "Masukkan ID Barang yang akan DIHAPUS PERMANEN (0 batal): ";
-            int idHapus;
-            cin >> idHapus;
-
+            int idHapus; cin >> idHapus;
             if (idHapus != 0) {
-                // Panggil fungsi hapus
                 hapusBarangMLL(L, idHapus);
-                
-                // PENTING: Langsung save ke file biar sinkron
                 saveToFile(L); 
+            }
+
+        } else if (pil == 5) { // <--- FITUR BARU DISINI
+            cout << "=== TUTUP LELANG & PILIH PEMENANG ===\n";
+            printList(L, "admin", ""); 
+            cout << "Masukkan ID Barang yang mau ditutup: ";
+            int id; cin >> id;
+            if (id != 0) {
+                tutupLelang(L, id);
+                saveToFile(L); // Auto save
             }
         }
 
@@ -533,7 +578,7 @@ void saveToFile(List L) {
         // BARANG|ID|Nama|Harga|Penjual|Status
         file << "BARANG|" << P->info.id << "|" << P->info.namaBarang << "|" 
              << (long)P->info.hargaAwal << "|" << P->info.penjual << "|" 
-             << P->info.status << endl;
+             << P->info.status << "|" << P->info.pemenang << endl;
         
         // SPEK|ID_Barang|Key|Value
         addressSpec Q = P->info.firstSpec;
@@ -555,10 +600,11 @@ void loadFromFile(List &L, int &lastID) {
     while (getline(file, line)) {
         stringstream ss(line);
         string segment;
-        string data[6];
+        string data[10]; 
         int i = 0;
 
-        while(getline(ss, segment, '|') && i < 6) {
+        // Pecah string berdasarkan tanda '|'
+        while(getline(ss, segment, '|') && i < 10) {
             data[i] = segment;
             i++;
         }
@@ -569,6 +615,7 @@ void loadFromFile(List &L, int &lastID) {
             double harga = stod(data[3]);
             string penjual = data[4];
             string status = data[5];
+            string pemenang = data[6]; // Baca data pemenang
 
             addressList P = new ElmList;
             P->info.id = id;
@@ -576,6 +623,7 @@ void loadFromFile(List &L, int &lastID) {
             P->info.hargaAwal = harga;
             P->info.penjual = penjual;
             P->info.status = status;
+            P->info.pemenang = pemenang; // Masukkan ke struct
             createStack(P->info.historyBid);
             P->info.firstSpec = NULL;
             P->next = NULL;

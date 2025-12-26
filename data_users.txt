@@ -1,4 +1,2 @@
-ayam|123|penjual
-Aku|123./'k|penjual
-Zaky|AkuSuka|penjual
-asu|12345678|pembeli
+JackSparrow|AkuPembajak|pembeli
+Zaky|AkuManusia|penjual

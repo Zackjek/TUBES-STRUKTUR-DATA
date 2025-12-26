@@ -43,9 +43,10 @@ struct ItemInfo {
     string namaBarang;
     string penjual;
     double hargaAwal;
-    string status;       // "PENDING", "AKTIF"
-    Stack historyBid;    // Stack bid per barang
-    addressSpec firstSpec; // Pointer ke Child (Spesifikasi)
+    string status;       // "PENDING", "AKTIF", "TERJUAL" <--- Nambah status TERJUAL
+    string pemenang;     // <--- TAMBAHAN BARU (Simpan nama pemenang)
+    Stack historyBid;    
+    addressSpec firstSpec; 
 };
 
 typedef struct ElmList *addressList;
@@ -123,4 +124,5 @@ bool loginUser(ListUser L, string username, string password, string role);
 bool isPasswordValid(string pass); // Validasi password 
 void saveUsers(ListUser L);      // Simpan akun ke file
 void loadUsers(ListUser &L);     // Load akun dari file
+void tutupLelang(List &L, int idBarang); // <--- Tambah ini
 #endif
