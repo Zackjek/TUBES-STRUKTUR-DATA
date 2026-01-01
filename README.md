@@ -10,7 +10,7 @@
 
 | No. | Nama Mahasiswa | NIM | Peran Utama (Role) | GitHub |
 | :-: | :--- | :---: | :--- | :---: |
-| 1. | Muhammad Zaky Mubarok | 103112400073 | [Zacky](https://github.com/Zackjek) |
+| 1. | Muhammad Zaky Mubarok | 103112400073 | [Zaky](https://github.com/Zackjek) |
 | 2. | Ichya Ulumiddin | 103112400076 |  [Ichya](https://github.com/Ichya20) |
 | 3. | Ariel Akhnaf Kusuma | 103112400050  | [Aril](https://github.com/wasdlover) |
 
